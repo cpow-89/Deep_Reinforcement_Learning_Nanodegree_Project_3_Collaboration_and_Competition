@@ -1,0 +1,22 @@
+{
+  "env_name": "Tennis_Linux",
+  "env_path": [".", "p3_collab-compet", "Tennis_Linux", "Tennis.x86_64"],
+  "monitor_dir": [ "monitor" ],
+  "checkpoint_dir": [ "checkpoints" ],
+  "device": "cuda:0",
+  "run_training": false,
+  "fitness_func": "unity_env_fitness_func",
+
+  "network": {
+    "type": "ContinuousPolicyNetwork",
+    "observation_size": 48,
+    "action_size": 4,
+    "fc_units": [ 64, 64, 64 ],
+    "activation_funcs": [ "Tanh", "Tanh", "Tanh" ]
+  },
+
+  "noise_std": 0.01,
+  "population_size": 50,
+  "parent_count": 10,
+  "mean_score_to_solve": 0.5
+}
