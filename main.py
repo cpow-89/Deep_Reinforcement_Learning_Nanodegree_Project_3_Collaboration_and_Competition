@@ -1,7 +1,11 @@
 import os
 import json
-from unityagents import UnityEnvironment
 import session
+import utils
+from normalizer import OnlineNormalizer
+from unityagents import UnityEnvironment
+import network
+import torch
 
 
 def main():
@@ -10,7 +14,18 @@ def main():
         config = json.load(read_file)
 
     env = UnityEnvironment(file_name=os.path.join(*config["env_path"]))
-    session.evaluate(None, env, num_test_runs=1)
+    normalizer = OnlineNormalizer(config["network"]["observation_size"])
+
+    if config["run_training"]:
+        elite_net = session.train(env, normalizer, config)
+        checkpoint_dir = os.path.join(".", *config["checkpoint_dir"], config["env_name"])
+        utils.save_state_dict(os.path.join(checkpoint_dir), elite_net.state_dict())
+    else:
+        trained_net = getattr(network, config["network"]["type"])(config["network"]).to(torch.device(config["device"]))
+        checkpoint_dir = os.path.join(".", *config["checkpoint_dir"], config["env_name"])
+        trained_net.load_state_dict(utils.load_latest_available_state_dict(os.path.join(checkpoint_dir, "*")))
+        session.evaluate(trained_net, env, normalizer, config, num_test_runs=50)
+
     env.close()
 
 

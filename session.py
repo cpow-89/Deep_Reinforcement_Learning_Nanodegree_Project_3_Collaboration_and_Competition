@@ -1,24 +1,17 @@
-import numpy as np
+from population import Population
+import fitness
+import torch
 
 
-def evaluate(agent, env, num_test_runs=3):
-    brain_name = env.brain_names[0]
+def train(env, normalizer, config):
+    population = Population(config, normalizer)
+    best_net = population.evolve(env)
 
+    return best_net
+
+
+def evaluate(net, env, normalizer, config, num_test_runs=3):
+    fitness_func = getattr(fitness, config["fitness_func"])
     for episode in range(num_test_runs):
-        env_info = env.reset(train_mode=False)[brain_name]
-        states = env_info.vector_observations
-        scores = np.zeros(2)
-        while True:
-            # actions = agent.act(state)
-            actions = np.random.randn(2, 2)  # select an action (for each agent)
-            actions = np.clip(actions, -1, 1)
-            env_info = env.step(actions)[brain_name]
-            next_states = env_info.vector_observations
-            rewards = env_info.rewards
-            dones = env_info.local_done
-            scores += rewards
-            states = next_states
-            if np.any(dones):
-                break
-
-        print("Score at Episode {}: {}".format(episode, np.mean(scores)))
+        scores = fitness_func(env, net, torch.device(config["device"]), normalizer, False)
+        print("Score at Episode {}: {}".format(episode, scores))
