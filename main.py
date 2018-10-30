@@ -6,11 +6,22 @@ from normalizer import OnlineNormalizer
 from unityagents import UnityEnvironment
 import network
 import torch
+import argparse
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Run Extended Q-Learning with given config")
+    parser.add_argument("-c",
+                        "--config",
+                        type=str,
+                        metavar="",
+                        required=True,
+                        help="Config file name - file must be available as .json in ./configs")
+
+    args = parser.parse_args()
+
     # load config files
-    with open(os.path.join(".", "configs", "tennis_linux.json"), "r") as read_file:
+    with open(os.path.join(".", "configs", args.config), "r") as read_file:
         config = json.load(read_file)
 
     env = UnityEnvironment(file_name=os.path.join(*config["env_path"]))
