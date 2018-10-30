@@ -25,6 +25,7 @@ class Population:
         self.gen_idx = 1
 
     def _create_init_population(self, env):
+        """create a initial population P of N individuals"""
         networks = [getattr(network, self.config["network"]["type"])(self.config["network"]).to(self.device)
                     for _ in range(self.config["population_size"])]
         return [(net, self.fitness_func(env, net, self.device, self.normalizer)) for net in networks]
