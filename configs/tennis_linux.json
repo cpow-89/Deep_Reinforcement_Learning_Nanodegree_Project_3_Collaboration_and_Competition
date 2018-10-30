@@ -18,5 +18,6 @@
   "noise_std": 0.01,
   "population_size": 50,
   "parent_count": 10,
-  "mean_score_to_solve": 0.5
+  "elite_evaluation_count": 5,
+  "mean_score_to_solve": 6.0
 }
